@@ -3,42 +3,49 @@ import Navbar from "./components/Navbar";
 import UserCard from "./components/UserCard";
 import Form from "./components/Form";
 import { useState } from "react";
+import { set } from "react-hook-form";
 
 const App = () => {
   const [toggle, setToggle] = useState(true);
 
   const [user, setUsers] = useState(() => {
-   return JSON.parse(localStorage.getItem("user")) || []
+    return JSON.parse(localStorage.getItem("user")) || [];
   });
 
-  // let obj = {
-  //   name: "rehan",
-  //   age: 43,
-  //   gender: "male"
-  // }
+  const [updatedData, setUpdatedData] = useState(null);
 
-  // localStorage.setItem("namee", JSON.stringify(obj))
-  // let rawdata = localStorage.getItem("namee") 
-  // let data = JSON.parse(rawdata)
-  // console.log(data)
-
+  const deleteUser = (id) => {
+    let filterData = user.filter((u) => u.id !== id);
+    console.log(filterData);
+    setUsers(filterData);
+    localStorage.setItem("user", JSON.stringify(filterData));
+  };
 
   return (
     <div className="flex flex-col h-screen w-screen">
-      <Navbar setToggle={setToggle} />
-       {toggle ? (
-        <div className="flex gap-3">
-          {
-            user.map((elem , index) => {
-              return <UserCard key={index} user={elem} />
-            })
-          }
+      <Navbar setToggle={setToggle} setUpdatedData={setUpdatedData} />
+      {toggle ? (
+        <div className="flex gap-3 flex-wrap">
+          {user.map((elem) => {
+            return (
+              <UserCard
+                setToggle={setToggle}
+                setUpdatedData={setUpdatedData}
+                deleteUser={deleteUser}
+                key={elem.id}
+                user={elem}
+              />
+            );
+          })}
         </div>
       ) : (
-        <Form user={user} setUsers={setUsers} setToggle={setToggle} />
-      )} 
-      
-      
+        <Form
+          updatedData={updatedData}
+          user={user}
+          setUsers={setUsers}
+          setToggle={setToggle}
+        />
+      )}
     </div>
   );
 };
